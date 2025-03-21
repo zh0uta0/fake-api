@@ -14,3 +14,6 @@ CREATE TABLE "Api" (
     "method" TEXT NOT NULL,
     "resType" TEXT NOT NULL DEFAULT 'inTurn'
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Api_url_key" ON "Api"("url");
