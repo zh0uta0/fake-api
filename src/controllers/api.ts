@@ -3,10 +3,11 @@ import * as api from "../services/api";
 import { validHttpMethod } from "../libs/validateHttpMethod";
 import { ParamsError } from "../libs/error";
 import { useDynamicRoute } from "../hooks/dynamic-route";
+import { ResExt } from "../types/ext";
 
 export async function getAll(_: Request, res: Response) {
   const all = await api.getApis();
-  res.json({ code: 200, msg: "成功", data: all });
+  (res as any as ResExt).success(all);
 }
 
 export async function create(req: Request, res: Response) {
