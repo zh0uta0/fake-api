@@ -1,4 +1,4 @@
-type HttpMethod = "get" | "post" | "put" | "delete";
+type HttpMethod = "get" | "post" | "put" | "patch" | "delete";
 
 type Res = {
   id: number;
@@ -20,5 +20,6 @@ type Api = {
 };
 
 type ApiNoId = Omit<Api, "id">;
+type ApiNoRes = Omit<Api, "responses">;
 type ApiNoIdRes = Omit<Api, "id" | "responses">;
 type ApiUpdate = Partial<ApiNoIdRes> & { id: number };

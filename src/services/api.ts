@@ -48,6 +48,21 @@ export const getApis = async () => {
   return await prisma.api.findMany();
 };
 
+// 查询接口返回值
+type ApiQuery = {
+  url?: string;
+  id?: number;
+};
+export const getRes = async (query: ApiQuery) => {
+  const api = await prisma.api.findFirstOrThrow({
+    where: query,
+    include: {
+      responses: true,
+    },
+  });
+  return api.responses;
+};
+
 // 根据url查询接口和返回值
 
 // 根据id查询接口和返回值

@@ -8,6 +8,9 @@
     "start": "node dist/app.js",
     "dev": "nodemon --exec ts-node --files src/app.ts"
   },
+  "_moduleAliases": {
+    "@": "dist/"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
