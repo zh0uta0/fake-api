@@ -11,11 +11,8 @@ export async function getAll(_: Request, res: Response) {
 }
 
 export async function create(req: Request, res: Response) {
-  let { url, method, resType = "turn" } = req.body;
-  method = validHttpMethod(method);
-  if (!url || !method) throw new ParamsError();
-
-  const created = await api.create({ url, method, resType });
+  let { url, method } = req.body;
+  const created = await api.create({ url, method });
 
   const { create } = await useDynamicRoute();
   create({ url, method });
@@ -26,23 +23,14 @@ export async function create(req: Request, res: Response) {
 export async function createRes(req: Request, res: Response) {
   const id = parseInt(req.params.id);
   const { content, alias = "" } = req.body as ResOrfo;
-  if (!content || !id) throw new ParamsError();
 
   const created = await api.addResById(id, { content, alias });
   res.json({ code: 200, msg: "添加返回值成功", data: created });
 }
 
 export async function update(req: Request, res: Response) {
-  const id = parseInt(req.params.id);
-  let { url, method, resType } = req.body;
-  method = validHttpMethod(method);
-  if (!id) throw new ParamsError();
+  let { url, method, id } = req.body;
 
-  const updateApi = {} as Partial<ApiNoIdRes>;
-  if (url) updateApi.url = url;
-  if (method) updateApi.method = method;
-  if (resType) updateApi.resType = resType;
-
-  const created = await api.updateApi({ id, ...updateApi });
+  const created = await api.updateApi({ url, method, id });
   res.json({ code: 200, msg: "成功", data: created });
 }

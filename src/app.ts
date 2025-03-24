@@ -1,7 +1,9 @@
 import express from "express";
 import cors from "cors";
+
 import "express-async-errors";
 import path from "path";
+
 import apiRoute from "./routes/api";
 
 import { useDynamicRoute } from "./hooks/dynamic-route";

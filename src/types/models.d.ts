@@ -16,7 +16,6 @@ type Api = {
   url: string;
   method: HttpMethod;
   responses: ResponseNoId[];
-  resType: string;
 };
 
 type ApiNoId = Omit<Api, "id">;
