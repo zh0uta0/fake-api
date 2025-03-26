@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
+
 import "express-async-errors";
 import path from "path";
-import "module-alias/register";
 
 import { useDynamicRoute } from "./hooks/dynamic-route";
 import { logger } from "./hooks/logger";

@@ -1,4 +1,5 @@
 import { Router } from "express";
+
 import * as apiCtl from "../controllers/api";
 import { validApi } from "../validators/api";
 import { validParamId } from "../validators/valid";
@@ -6,6 +7,7 @@ import { validRes } from "../validators/response";
 
 export const router = Router();
 
+// 获取全部 api
 router.get("/", apiCtl.getAll);
 router.get("/:id", validParamId, apiCtl.getById);
 router.get("/:id/res", validParamId, apiCtl.getResById);
