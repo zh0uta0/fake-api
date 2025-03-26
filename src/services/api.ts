@@ -86,6 +86,7 @@ export const getRes = async (id: number) => {
 
 // 根据url查询接口和返回值
 export const getResByUrl = async (url: string, method: HttpMethod) => {
+  // TODO: 添加查询条件 enable 为 true
   const api = await prisma.api.findFirstOrThrow({
     where: { url, method },
     include: {
