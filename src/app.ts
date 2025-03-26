@@ -2,12 +2,14 @@ import express from "express";
 import cors from "cors";
 import "express-async-errors";
 import path from "path";
-import apiRoute from "./routes/api";
+import "module-alias/register";
 
 import { useDynamicRoute } from "./hooks/dynamic-route";
 import { logger } from "./hooks/logger";
 import { errors } from "./hooks/errors";
 import { success } from "./hooks/success";
+import apiRoute from "./routes/api";
+import resRoute from "./routes/response";
 
 const app = express();
 
@@ -23,6 +25,7 @@ app.use(logger);
 app.use(success);
 
 app.use("/api", apiRoute);
+app.use("/res", resRoute);
 
 // 错误处理中间件（必须放在所有路由之后）
 app.use(errors);

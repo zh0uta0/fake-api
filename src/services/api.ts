@@ -1,4 +1,12 @@
 import { PrismaClient } from "@prisma/client";
+import {
+  ApiNoIdRes,
+  ResOrfo,
+  ApiNoId,
+  ApiUpdate,
+  ResUpdate,
+  HttpMethod,
+} from "../types/models";
 
 const prisma = new PrismaClient();
 
@@ -40,6 +48,19 @@ export const updateApiRes = async (res: ResUpdate) => {
 };
 
 // 删除接口和所有返回值
+export const deleteById = async (id: number) => {
+  const api = await prisma.api.findUnique({ where: { id } });
+  if (!api) return;
+
+  await prisma.response.deleteMany({ where: { apiId: id } });
+  return await prisma.api.delete({ where: { id } });
+
+  const tasks = [
+    prisma.api.delete({ where: { id } }),
+    prisma.response.deleteMany({ where: { apiId: id } }),
+  ];
+  await Promise.all(tasks);
+};
 
 // 删除接口的返回值
 
@@ -53,9 +74,9 @@ type ApiQuery = {
   url?: string;
   id?: number;
 };
-export const getRes = async (query: ApiQuery) => {
+export const getRes = async (id: number) => {
   const api = await prisma.api.findFirstOrThrow({
-    where: query,
+    where: { id },
     include: {
       responses: true,
     },
@@ -64,7 +85,26 @@ export const getRes = async (query: ApiQuery) => {
 };
 
 // 根据url查询接口和返回值
+export const getResByUrl = async (url: string, method: HttpMethod) => {
+  const api = await prisma.api.findFirstOrThrow({
+    where: { url, method },
+    include: {
+      responses: true,
+    },
+  });
+  return api.responses;
+};
 
 // 根据id查询接口和返回值
+export const getById = async (id: number) => {
+  return await prisma.api.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      responses: true,
+    },
+  });
+};
 
 // 根据url查询接口和返回值

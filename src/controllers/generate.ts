@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 
 import * as apiSer from "../services/api";
 import { dir } from "console";
+import { ApiNoRes } from "../types/models";
 
 export async function generate(req: Request, res: Response) {
   const app = req.app;

@@ -1,21 +1,29 @@
 import { Request, Response } from "express";
 import * as api from "../services/api";
-import { validHttpMethod } from "../libs/validateHttpMethod";
-import { ParamsError } from "../libs/error";
 import { useDynamicRoute } from "../hooks/dynamic-route";
 import { ResExt } from "../types/ext";
+import { ResOrfo } from "..//types/models";
 
 export async function getAll(_: Request, res: Response) {
   const all = await api.getApis();
   (res as any as ResExt).success(all);
 }
 
-export async function create(req: Request, res: Response) {
-  let { url, method, resType = "turn" } = req.body;
-  method = validHttpMethod(method);
-  if (!url || !method) throw new ParamsError();
+export async function getById(req: Request, res: Response) {
+  const data = await api.getById(parseInt(req.params.id));
+  if (!data) throw new Error("没有数据");
+  (res as any as ResExt).success(data);
+}
 
-  const created = await api.create({ url, method, resType });
+export async function getResById(req: Request, res: Response) {
+  const id = parseInt(req.params.id);
+  const data = await api.getRes(id);
+  (res as any as ResExt).success(data);
+}
+
+export async function create(req: Request, res: Response) {
+  const { url, method } = req.body;
+  const created = await api.create({ url, method });
 
   const { create } = await useDynamicRoute();
   create({ url, method });
@@ -25,24 +33,23 @@ export async function create(req: Request, res: Response) {
 
 export async function createRes(req: Request, res: Response) {
   const id = parseInt(req.params.id);
-  const { content, alias = "" } = req.body as ResOrfo;
-  if (!content || !id) throw new ParamsError();
+  const { content, alias = "", enable = true } = req.body as ResOrfo;
 
-  const created = await api.addResById(id, { content, alias });
+  const created = await api.addResById(id, { content, alias, enable });
   res.json({ code: 200, msg: "添加返回值成功", data: created });
 }
 
 export async function update(req: Request, res: Response) {
   const id = parseInt(req.params.id);
-  let { url, method, resType } = req.body;
-  method = validHttpMethod(method);
-  if (!id) throw new ParamsError();
+  let { url, method } = req.body;
 
-  const updateApi = {} as Partial<ApiNoIdRes>;
-  if (url) updateApi.url = url;
-  if (method) updateApi.method = method;
-  if (resType) updateApi.resType = resType;
-
-  const created = await api.updateApi({ id, ...updateApi });
+  const created = await api.updateApi({ id, url, method });
   res.json({ code: 200, msg: "成功", data: created });
+}
+
+export async function remove(req: Request, res: Response) {
+  const id = parseInt(req.params.id);
+  const data = await api.deleteById(id);
+
+  (res as ResExt).success(data);
 }
