@@ -12,7 +12,8 @@ router.get("/", apiCtl.getAll);
 router.get("/:id", validParamId, apiCtl.getById);
 router.get("/:id/res", validParamId, apiCtl.getResById);
 
-router.post("/", validApi, apiCtl.create);
+// router.post("/", validApi, apiCtl.create);
+router.post("/", validApi, apiCtl.createWithRes);
 router.post("/:id/res", validParamId, validRes, apiCtl.createRes);
 router.put("/:id", validParamId, validApi, apiCtl.update);
 router.delete("/:id", validParamId, apiCtl.remove);

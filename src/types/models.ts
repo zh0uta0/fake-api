@@ -21,6 +21,7 @@ export type Api = {
   id: number;
   url: string;
   method: HttpMethod;
+  alias?: string;
   responses: ResNoId[];
 };
 

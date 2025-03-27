@@ -23,6 +23,7 @@ model Api {
   id        Int        @id @default(autoincrement())
   url       String
   method    String
+  alias     String?
   responses Response[]
 
   @@unique([url, method])

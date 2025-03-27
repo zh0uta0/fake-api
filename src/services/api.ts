@@ -27,10 +27,31 @@ export const addResById = async (id: number, res: ResOrfo) => {
 };
 
 // 创建接口和返回值
-export const createWithRes = async (api: ApiNoId) => {};
+export const createWithRes = async (api: ApiNoId) => {
+  const { url, method, alias, responses = [] } = api;
+  const created = await prisma.api.create({
+    data: {
+      url,
+      method,
+      alias,
+      responses: {
+        create: responses.map((res) => ({
+          content: res.content,
+          alias: res.alias ?? "",
+          enable: res.enable ?? true,
+        })),
+      },
+    },
+    include: {
+      responses: true,
+    },
+  });
+  if (!created) throw new Error("创建失败");
+  return create;
+};
 
 // 修改接口
-export const updateApi = async (api: Partial<ApiUpdate>) => {
+export const updateApi = async (api: ApiUpdate) => {
   return await prisma.api.update({
     where: { id: api.id },
     data: { ...api },
@@ -54,12 +75,6 @@ export const deleteById = async (id: number) => {
 
   await prisma.response.deleteMany({ where: { apiId: id } });
   return await prisma.api.delete({ where: { id } });
-
-  const tasks = [
-    prisma.api.delete({ where: { id } }),
-    prisma.response.deleteMany({ where: { apiId: id } }),
-  ];
-  await Promise.all(tasks);
 };
 
 // 删除接口的返回值
@@ -87,13 +102,15 @@ export const getRes = async (id: number) => {
 // 根据url查询接口和返回值
 export const getResByUrl = async (url: string, method: HttpMethod) => {
   // TODO: 添加查询条件 enable 为 true
-  const api = await prisma.api.findFirstOrThrow({
+  const api = await prisma.api.findFirst({
     where: { url, method },
     include: {
-      responses: true,
+      responses: {
+        where: { enable: true },
+      },
     },
   });
-  return api.responses;
+  return api?.responses;
 };
 
 // 根据id查询接口和返回值

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as api from "../services/api";
 import { useDynamicRoute } from "../hooks/dynamic-route";
 import { ResExt } from "../types/ext";
-import { ResOrfo } from "..//types/models";
+import { ApiNoId, ResOrfo, ResUpdate } from "..//types/models";
 
 export async function getAll(_: Request, res: Response) {
   const all = await api.getApis();
@@ -37,6 +37,14 @@ export async function createRes(req: Request, res: Response) {
 
   const created = await api.addResById(id, { content, alias, enable });
   res.json({ code: 200, msg: "添加返回值成功", data: created });
+}
+
+export async function createWithRes(req: Request, res: Response) {
+  const { url, method, alias = "", responses } = req.body as ApiNoId;
+  const data = await api.createWithRes({ url, method, alias, responses });
+  const { create } = await useDynamicRoute();
+  create({ url, method });
+  (res as ResExt).success(data);
 }
 
 export async function update(req: Request, res: Response) {

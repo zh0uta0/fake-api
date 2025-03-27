@@ -9,6 +9,7 @@ export type ResSchema = {
 const apiSchema = z.object({
   url: urlSchema,
   method: methodSchema,
+  alias: z.string().optional(),
 });
 
 // const resSchema = z.object({
