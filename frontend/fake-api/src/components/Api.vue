@@ -1,39 +1,60 @@
 <template>
   <div class="api">
-    <ElInput v-if="editMod" class="api-alias" :value="'半成品入库前重复性校验'" />
-    <ElTag v-else class="api-alias ellipsis" type="primary" size="large"
-      >半成品入库前重复性校验</ElTag
-    >
+    <ElInput v-if="$props.value.editMod" class="api-alias" v-model="$props.value.alias" />
+    <ElTag v-else class="api-alias ellipsis" type="primary" size="large">{{
+      $props.value.alias
+    }}</ElTag>
 
-    <ElInput v-if="editMod" class="api-method" :value="'GET'" />
-    <ElTag v-else class="api-method" size="large">GET</ElTag>
+    <ElInput v-if="$props.value.editMod" class="api-method" v-model="$props.value.method" />
+    <ElTag v-else class="api-method" size="large">{{ $props.value.method }}</ElTag>
 
-    <ElInput
-      v-if="editMod"
-      class="api-url"
-      :value="'/admin-api/wms/terminal/stock/queryRemiStockBeforeInRoom'"
-    />
+    <ElInput v-if="$props.value.editMod" class="api-url" v-model="$props.value.url" />
     <ElTag v-else class="api-url ellipsis" type="primary" size="large">
-      /admin-api/wms/terminal/stock/queryRemiStockBeforeInRoom
+      {{ $props.value.url }}
     </ElTag>
 
     <div class="api-opt">
-      <ElButton :icon="Edit" :type="editMod ? 'success' : 'primary'" @click="editMod = !editMod">
-        {{ editMod ? '保存' : '修改' }}
+      <ElButton :icon="Edit" :type="$props.value.editMod ? 'success' : 'primary'" @click="onUpdate">
+        {{ $props.value.editMod ? '保存' : '修改' }}
       </ElButton>
 
       <ElButton :icon="Delete" type="danger">删除</ElButton>
-      <ElButton :icon="Loading" type="success">返回值</ElButton>
+      <ElButton type="success">返回值</ElButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ElRow, ElCol, ElButton, ElTag, ElInput } from 'element-plus'
-import { Delete, Edit, Loading } from '@element-plus/icons-vue'
-import { ref } from 'vue'
+import { ElButton, ElTag, ElInput } from 'element-plus'
+import { Delete, Edit } from '@element-plus/icons-vue'
+import { computed, ref } from 'vue'
 
-const editMod = ref(false)
+const $props = defineProps({
+  modelValue: {
+    type: Object,
+    default: () => ({
+      url: '无',
+      method: 'GET',
+      alias: '无',
+    }),
+  },
+  value: {
+    type: Object,
+    default: () => ({
+      url: '无',
+      method: 'GET',
+      alias: '无',
+      editMod: false,
+    }),
+  },
+})
+
+const $emit = defineEmits(['update:modelValue', 'save', 'delete'])
+
+const onUpdate = () => {
+  $props.value.editMod = !$props.value.editMod
+  if (!$props.value.editMod.value) $emit('save', $props.value)
+}
 </script>
 
 <style scoped>
