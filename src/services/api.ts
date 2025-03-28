@@ -46,8 +46,11 @@ export const createWithRes = async (api: ApiNoId) => {
       responses: true,
     },
   });
+
+  console.log("created", created);
+
   if (!created) throw new Error("创建失败");
-  return create;
+  return created;
 };
 
 // 修改接口

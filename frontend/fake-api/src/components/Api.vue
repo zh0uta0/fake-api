@@ -18,8 +18,8 @@
         {{ $props.value.editMod ? '保存' : '修改' }}
       </ElButton>
 
-      <ElButton :icon="Delete" type="danger">删除</ElButton>
-      <ElButton type="success">返回值</ElButton>
+      <ElButton :icon="Delete" type="danger" @click="onRemove">删除</ElButton>
+      <ElButton type="success" @click="onResponse">返回值</ElButton>
     </div>
   </div>
 </template>
@@ -49,11 +49,20 @@ const $props = defineProps({
   },
 })
 
-const $emit = defineEmits(['update:modelValue', 'save', 'delete'])
+const $emit = defineEmits(['update:modelValue', 'save', 'remove', 'response'])
 
 const onUpdate = () => {
   $props.value.editMod = !$props.value.editMod
-  if (!$props.value.editMod.value) $emit('save', $props.value)
+  if ($props.value.editMod === false) {
+    $emit('save', $props.value)
+  }
+}
+
+const onRemove = () => {
+  $emit('remove', $props.value)
+}
+const onResponse = () => {
+  $emit('response', $props.value)
 }
 </script>
 

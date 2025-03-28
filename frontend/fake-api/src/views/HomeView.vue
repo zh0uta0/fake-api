@@ -5,32 +5,29 @@ import { ElButton } from 'element-plus'
 import { ref } from 'vue'
 
 import { type Api } from '@/types/model'
-import { createApi } from '@/apis/api'
+import { getApis, createApi, updateApi, deleteApi } from '@/apis/api'
+import { useRouter } from 'vue-router'
 
-const apiList = ref<Api[]>([
-  {
-    id: 1,
-    alias: '获取当前拉丝机头的生产信息1',
-    url: '/admin-api/mes/terminal/pda/queryWireProductionInfo',
-    method: 'POST',
-    editMod: false,
-  },
-  {
-    id: 2,
-    alias: '获取当前拉丝机头的生产信息2',
-    url: '/admin-api/mes/terminal/pda/queryWireProductionInfo',
-    method: 'POST',
-    editMod: false,
-  },
-])
+const router = useRouter()
+
+const apiList = ref<Api[]>([])
+
+initApis()
 
 const onApiSave = async (value: Api) => {
-  console.log('value', value)
+  console.log('onApiSave - 点击保存 value', value)
+  // 创建新的api
   if (value.temp) {
-    // 发送请求保存数据，修改id，temp
+    // 发送请求保存数据，
     const { id, editMod, temp, ...api } = value
-    const data = await createApi(api)
-    console.log('data', data)
+    await createApi(api)
+
+    initApis()
+  } else {
+    // 修改api
+    const { id, url, method, alias } = value
+    await updateApi({ id, url, method, alias })
+    initApis()
   }
 }
 
@@ -44,6 +41,23 @@ const onApiCreate = () => {
     temp: true,
   })
 }
+
+const onApiDelete = async (value: Api) => {
+  const { id } = value
+  await deleteApi(id)
+  initApis()
+}
+
+const onResponse = async (value: Api) => {
+  console.log('🚀 ~ onResponse ~ router:', router)
+  router.push(`/${value.id}/res`)
+}
+
+async function initApis() {
+  // 请求获取所有api
+  const data = await getApis()
+  apiList.value = data
+}
 </script>
 
 <template>
@@ -54,9 +68,13 @@ const onApiCreate = () => {
       :key="item.id"
       :value="item"
       @save="onApiSave"
+      @remove="onApiDelete"
+      @response="onResponse"
       style="margin: 1rem 0"
     />
 
-    <div>{{ apiList }}</div>
+    <ul>
+      <li v-for="item in apiList" :key="item.id">{{ item }}</li>
+    </ul>
   </main>
 </template>

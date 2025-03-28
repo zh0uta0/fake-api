@@ -49,9 +49,9 @@ export async function createWithRes(req: Request, res: Response) {
 
 export async function update(req: Request, res: Response) {
   const id = parseInt(req.params.id);
-  let { url, method } = req.body;
+  let { url, method, alias = "" } = req.body;
 
-  const created = await api.updateApi({ id, url, method });
+  const created = await api.updateApi({ id, url, method, alias });
   res.json({ code: 200, msg: "成功", data: created });
 }
 
