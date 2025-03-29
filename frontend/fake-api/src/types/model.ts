@@ -6,6 +6,8 @@ export type ResSchema = {
   enable: boolean
 }
 
+export type ResNoId = Omit<ResSchema, 'id'>
+
 export type ApiSchema = {
   id: number
   url: string
@@ -14,9 +16,13 @@ export type ApiSchema = {
   responses?: ResSchema[]
 }
 
+export type ApiNoRes = Omit<ApiSchema, 'responses'>
+
 export interface Api extends ApiSchema {
   editMod: boolean
   temp?: boolean
 }
 
 export type ApiCreate = Omit<Api, 'id' | 'temp' | 'editMod'>
+
+export type ElThemeType = 'success' | 'primary' | 'warning' | 'danger'

@@ -10,4 +10,8 @@ import { RouterLink, RouterView } from 'vue-router'
 * {
   box-sizing: border-box;
 }
+
+body {
+  margin: 0;
+}
 </style>

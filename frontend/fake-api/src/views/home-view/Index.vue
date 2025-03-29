@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import ApiCpt from '@/components/Api.vue'
+import ApiCpt from '@/views/home-view/Api.vue'
 import { Plus } from '@element-plus/icons-vue'
 import { ElButton } from 'element-plus'
 import { ref } from 'vue'
 
 import { type Api } from '@/types/model'
-import { getApis, createApi, updateApi, deleteApi } from '@/apis/api'
+import * as reqApi from '@/apis/api'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -20,13 +20,13 @@ const onApiSave = async (value: Api) => {
   if (value.temp) {
     // 发送请求保存数据，
     const { id, editMod, temp, ...api } = value
-    await createApi(api)
+    await reqApi.create(api)
 
     initApis()
   } else {
     // 修改api
     const { id, url, method, alias } = value
-    await updateApi({ id, url, method, alias })
+    await reqApi.update({ id, url, method, alias })
     initApis()
   }
 }
@@ -36,7 +36,7 @@ const onApiCreate = () => {
     id: Date.now(),
     alias: '',
     url: '',
-    method: '',
+    method: 'get',
     editMod: true,
     temp: true,
   })
@@ -44,7 +44,7 @@ const onApiCreate = () => {
 
 const onApiDelete = async (value: Api) => {
   const { id } = value
-  await deleteApi(id)
+  await reqApi.remove(id)
   initApis()
 }
 
@@ -55,26 +55,27 @@ const onResponse = async (value: Api) => {
 
 async function initApis() {
   // 请求获取所有api
-  const data = await getApis()
+  const data = await reqApi.getAll()
   apiList.value = data
 }
 </script>
 
 <template>
-  <main>
-    <ElButton type="primary" :icon="Plus" @click="onApiCreate">添加</ElButton>
-    <ApiCpt
-      v-for="item in apiList"
-      :key="item.id"
-      :value="item"
-      @save="onApiSave"
-      @remove="onApiDelete"
-      @response="onResponse"
-      style="margin: 1rem 0"
-    />
-
-    <ul>
-      <li v-for="item in apiList" :key="item.id">{{ item }}</li>
-    </ul>
+  <main class="min-h-screen bg-gray-50 p-4">
+    <div class="bg-white rounded-lg shadow-sm p-6">
+      <div class="text-xl font-medium">返回值列表</div>
+      <div class="text-right">
+        <ElButton type="primary" :icon="Plus" @click="onApiCreate"></ElButton>
+      </div>
+      <ApiCpt
+        v-for="item in apiList"
+        :key="item.id"
+        :value="item"
+        @save="onApiSave"
+        @remove="onApiDelete"
+        @response="onResponse"
+        style="margin: 1rem 0"
+      />
+    </div>
   </main>
 </template>

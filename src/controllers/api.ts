@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import * as api from "../services/api";
 import { useDynamicRoute } from "../hooks/dynamic-route";
 import { ResExt } from "../types/ext";
-import { ApiNoId, ResOrfo, ResUpdate } from "..//types/models";
+import { ApiNoId, ResOrfo, ResUpdate, RouteSchema } from "..//types/models";
 
 export async function getAll(_: Request, res: Response) {
   const all = await api.getApis();
@@ -52,12 +52,21 @@ export async function update(req: Request, res: Response) {
   let { url, method, alias = "" } = req.body;
 
   const created = await api.updateApi({ id, url, method, alias });
+
+  const { update } = await useDynamicRoute();
+  update({ url, method });
+
   res.json({ code: 200, msg: "成功", data: created });
 }
 
 export async function remove(req: Request, res: Response) {
   const id = parseInt(req.params.id);
   const data = await api.deleteById(id);
+  if (data) {
+    const { remove } = await useDynamicRoute();
+    remove(data as RouteSchema);
+  }
+  console.log("data111111", data);
 
   (res as ResExt).success(data);
 }

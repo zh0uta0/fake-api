@@ -1,35 +1,29 @@
-import type { Api, ApiCreate, ApiSchema } from '@/types/model'
-import axios from 'axios'
+import type { Api, ApiCreate, ApiSchema, ResSchema } from '@/types/model'
+import { request } from './request'
 
-const BaseURL = 'http://localhost:9468'
-const request = axios.create({
-  baseURL: BaseURL,
-})
+export const get = async (id: number) => {
+  const { data } = await request.get<ApiSchema>(`/api/${id}`)
+  // return data as Promise<ApiSchema>
+  // (data as )
+  if (data.responses) {
+    data.responses = formatResContent(data.responses)
+  }
 
-request.interceptors.response.use(
-  (response) => {
-    if (response.status === 200) return response.data
-    return response
-  },
-  (error) => {
-    // 超出 2xx 范围的状态码都会触发该函数。
-    // 对响应错误做点什么
-    return Promise.reject(error)
-  },
-)
+  return data
+}
 
-export const getApis = async () => {
+export const getAll = async () => {
   const res = await request.get('/api')
   return res.data.reverse() as any as Promise<Api[]>
 }
 
-export const createApi = async (api: ApiCreate) => {
+export const create = async (api: ApiCreate) => {
   const res = await request.post('/api', api)
 
   return res.data as Promise<Api>
 }
 
-export const updateApi = async (schema: ApiSchema) => {
+export const update = async (schema: ApiSchema) => {
   const { id, ...api } = schema
   const res = await request.put(`/api/${id}`, api)
   console.log('🚀 ~ updateApi ~ res:', res)
@@ -37,13 +31,16 @@ export const updateApi = async (schema: ApiSchema) => {
   return res.data as Promise<Api>
 }
 
-export const deleteApi = async (id: number) => {
+export const remove = async (id: number) => {
   const { data } = await request.delete(`/api/${id}`)
   console.log('🚀 ~ deleteApi ~ data:', data)
   return data
 }
 
-export const getById = async (id: number) => {
-  const { data } = await request.get(`/api/${id}`)
-  return data as Promise<ApiSchema>
+function formatResContent(res: ResSchema[]) {
+  return res.map((item) => {
+    let { content, ...others } = item
+    content = JSON.stringify(content)
+    return { content, ...others }
+  })
 }

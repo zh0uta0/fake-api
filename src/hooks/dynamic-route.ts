@@ -37,14 +37,23 @@ export function create(routeScheme: RouteSchema) {
 }
 
 // 删除接口
-export function remove(url: string) {
-  App.stack = App.stack.filter((e) => e.path !== url);
+export function remove(routeScheme: RouteSchema) {
+  const { url, method } = routeScheme;
+  const stack = App._router.stack;
+  App._router.stack = stack.filter((e: any) => {
+    if (!e.route) {
+      return true;
+    } else {
+      console.log("🚀 ~ remove ~ stack.e.route:", e.route);
+      return e.route.path !== url && e.route.method !== method;
+    }
+  });
   resIndexCounter.delete(url);
 }
 
 // 更新接口
 export function update(routeScheme: RouteSchema) {
-  remove(routeScheme.url);
+  remove(routeScheme);
   create(routeScheme);
 }
 
